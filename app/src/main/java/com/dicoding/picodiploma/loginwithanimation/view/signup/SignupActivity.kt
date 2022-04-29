@@ -2,7 +2,6 @@ package com.dicoding.picodiploma.loginwithanimation.view.signup
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.content.Context
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -10,10 +9,8 @@ import android.util.Log
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModelProvider
 import com.dicoding.picodiploma.loginwithanimation.api.ApiConfig
 import com.dicoding.picodiploma.loginwithanimation.api.RegisterResponse
@@ -27,13 +24,11 @@ import retrofit2.Response
 class SignupActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignupBinding
     private lateinit var signupViewModel: SignupViewModel
-    private lateinit var signupUser: SignupUser
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySignupBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         setupView()
         setupViewModel()
         setupAction()
@@ -65,48 +60,59 @@ class SignupActivity : AppCompatActivity() {
             val name = binding.nameEditText.text.toString()
             val email = binding.emailEditText.text.toString()
             val password = binding.passwordEditText.text.toString()
-            when {
-                name.isEmpty() -> {
-                    binding.nameEditTextLayout.error = "Masukkan email"
-                }
-                email.isEmpty() -> {
-                    binding.emailEditTextLayout.error = "Masukkan email"
-                }
-                password.isEmpty() -> {
-                    binding.passwordEditTextLayout.error = "Masukkan password"
-                }
-                password.length < 6 -> {
-                    binding.passwordEditTextLayout.error = "Password harus lebih dari 6"
-                }
-                else -> {
-                    ApiConfig.instances.register(name, email, password).enqueue(object :
-                        Callback<RegisterResponse> {
-                        override fun onResponse(
-                            call: Call<RegisterResponse>,
-                            response: Response<RegisterResponse>
-                        ) {
-                            Log.d("Register", name)
-
-                            AlertDialog.Builder(this@SignupActivity).apply {
-                                setTitle("Yeah!")
-                                setMessage("Akunnya sudah jadi nih. Yuk, login dan belajar coding.")
-                                setPositiveButton("Lanjut") { _, _ ->
-                                    finish()
-                                }
-                                create()
-                                show()
+            if(inputValid()) {
+                ApiConfig.instances.register(name, email, password).enqueue(object : Callback<RegisterResponse> {
+                    override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
+                        AlertDialog.Builder(this@SignupActivity).apply {
+                            setTitle("Yeah!")
+                            setMessage("Akunnya sudah jadi nih. Yuk, login dan belajar coding.")
+                            setPositiveButton("Lanjut") { _, _ ->
+                                finish()
                             }
+                            create()
+                            show()
                         }
+                    }
 
-                        override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
-                            Log.e("Register", "error")
-                        }
+                    override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
+                        Toast.makeText(this@SignupActivity, "Gagal Register", Toast.LENGTH_SHORT).show()
+                    }
 
-                    })
-                }
+                })
             }
         }
     }
+
+    private fun inputValid(): Boolean = with(binding) {
+        nameEditTextLayout.error = null
+        emailEditTextLayout.error = null
+        passwordEditTextLayout.error = null
+        var isValid = true
+        val name = nameEditText.text.toString()
+        val email = emailEditText.text.toString()
+        val password = passwordEditText.text.toString()
+
+        if(name.isEmpty()) {
+            Log.d(TAG, "inputValid: name invalid")
+            nameEditTextLayout.error = "Harap memasukkan nama"
+            isValid = false
+        }
+
+        if(email.isEmpty()) {
+            Log.d(TAG, "inputValid: email invalid")
+            emailEditTextLayout.error = "Harap memasukkan email"
+            isValid = false
+        }
+
+        if(password.length < 6) {
+            Log.d(TAG, "inputValid: password invalid")
+            passwordEditTextLayout.error = "Password setidaknya memiliki 6 karakter"
+            isValid = false
+        }
+
+        return isValid
+    }
+
 
     private fun playAnimation() {
         ObjectAnimator.ofFloat(binding.imageView, View.TRANSLATION_X, -30f, 30f).apply {
@@ -139,4 +145,9 @@ class SignupActivity : AppCompatActivity() {
             startDelay = 500
         }.start()
     }
+
+    companion object {
+        private const val TAG = "SignUpActivity"
+    }
+
 }
