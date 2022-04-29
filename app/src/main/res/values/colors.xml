@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="blue_200">#64B5F6</color>
+    <color name="blue_500">#f50057</color>
+    <color name="blue_700">#f50057</color>
+    <color name="red_200">#F06292</color>
+    <color name="red_700">#AD1457</color>
+    <color name="navi">#f50057</color>
+
+    <color name="dark_pink">#bb002f</color>
+    <color name="light_pink">#F7FF5983</color>
+    <color name="lighter_pink">#F7FFBFCF</color>
+    <color name="primary_pink">#f50057</color>
+
+</resources>
