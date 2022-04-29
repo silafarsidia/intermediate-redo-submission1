@@ -51,7 +51,6 @@ class MainActivity : AppCompatActivity() {
 
         storyAdapter.setOnItemClickCallback(object: AdapterStory.OnItemClickCallback{
             override fun onItemClick(result: ListStory) {
-//                Toast.makeText(this@MainActivity, result.name, Toast.LENGTH_SHORT).show()
                 Intent(this@MainActivity, DetailActivity::class.java).apply {
                     this.putExtra(DetailActivity.EXTRA_NAME, result.name)
                     this.putExtra(DetailActivity.EXTRA_DESCRIPTION, result.description)
@@ -104,7 +103,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun getAllStory() {
         getStory.observe(this){ story ->
-//            storyAdapter = AdapterStory(story)
             storyAdapter.setStories(story)
             binding.rvListStories.adapter = storyAdapter
         }
@@ -146,6 +144,7 @@ class MainActivity : AppCompatActivity() {
                 loginViewModel.setLoginData("", "", false)
                 val intent = Intent(this, WelcomeActivity::class.java)
                 startActivity(intent)
+                finish()
             }
             R.id.menu2 -> {
                 startActivity(Intent(Settings.ACTION_LOCALE_SETTINGS))
